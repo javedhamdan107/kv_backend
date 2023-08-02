@@ -1,9 +1,22 @@
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+
+
+@Entity("employees")
 class Employee{
+    @PrimaryGeneratedColumn()
     id: number;
+    
+    @Column()
     name:string;
+
+    @Column()
     email:string;
-    created_at: Date;
-    updated_at: Date;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }
 
 export default Employee;
