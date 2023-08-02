@@ -1,9 +1,9 @@
-import Calculator from "./calculator";
-
-const calculator= new Calculator();
-console.log(calculator.add(3,2));
-console.log(calculator.subtract(10,5));
-console.log(calculator.multiply(5,7));
-console.log(calculator.divide(20,4));
-console.log(calculator.modulus(10,3));
-console.log(calculator.power(2,3));
+import express from "express";
+const server=express();
+server.get('/*',(req,res) => {
+    console.log(req.url);
+    res.status(200).send("Hello world typescript");
+});
+server.listen(3000,()=> {
+    console.log("Server is listening to 3000");
+});
