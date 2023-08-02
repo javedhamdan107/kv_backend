@@ -1,20 +1,29 @@
 import express from "express";
 import Employee from "./Employee";
-import { DataSource } from "typeorm";
+import { DataSource, FindOptionsWhere, Like } from "typeorm";
 import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 import dataSource from "./data-source";
 
 const employeeRouter = express.Router();
-let count:number=2;
-const employees:Employee[]=[{
-    id:1,name:"name1",email:"email1@gmail.com",createdAt:new Date(),updatedAt:new Date()
-},{
-    id:2,name:"name2",email:"email2@gmail.com",createdAt:new Date(),updatedAt:new Date()
-}]
+
 employeeRouter.get('/',async (req,res) => {
     console.log(req.url);
+    const nameFilter = req.query.name as string;
+    const emailFilter = req.query.email as string;
     const employeeRepository = dataSource.getRepository(Employee);
-    const employees= await employeeRepository.find();
+    const qb = employeeRepository.createQueryBuilder();
+    if(nameFilter)
+    {
+        qb.where("name LIKE :name",{name: `${nameFilter}%`});
+    }
+    if(emailFilter)
+    {
+        qb.andWhere("email LIKE :email",{email: `%${emailFilter}%`});
+    }
+    
+    
+    const employees= await qb.getMany()
+    
     res.status(200).send(employees);
 });
 
@@ -25,8 +34,16 @@ employeeRouter.get('/:id',async (req,res) => {
 
     const employeeRepository = dataSource.getRepository(Employee);
     const employee=await employeeRepository.findOneBy({id: Number(req.params.id)});
+    if(employee)
+    {
+        res.status(200).send(employee);
+    }
+    else
+    {
+        res.status(404).send();
+    }
 
-    res.status(200).send(employee);
+    
 
 });
 
@@ -61,7 +78,8 @@ employeeRouter.delete('/:id',async (req,res) => {
     console.log(req.url);
     const employeeRepository = dataSource.getRepository(Employee);
     const employee=await employeeRepository.findOneBy({id: Number(req.params.id)});
-    await employeeRepository.remove(employee);
+    await employeeRepository.softRemove(employee);
+
     res.status(204).send("employee deleted");
 });
 export default employeeRouter;
