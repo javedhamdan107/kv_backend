@@ -1,4 +1,6 @@
+import Address from "../entity/address.entity";
 import Employee from "../entity/employee.entity";
+import HttpException from "../exceptions/http.exception";
 import EmployeeRepository from "../repository/employee.repository";
 
 class EmployeeService{
@@ -12,13 +14,22 @@ class EmployeeService{
         return this.employeeRepository.findAllEmployees();
     }
 
-    getEmployeeById(id:number): Promise<Employee| null> {
-        return this.employeeRepository.findAnEmployeeById(id);
+    async getEmployeeById(id:number): Promise<Employee| null> {
+        const employee= await this.employeeRepository.findAnEmployeeById(id);
+        if(!employee)
+        {
+            throw new HttpException(404,`Employee not Found with id:${id}`);
+        }
+        return employee;
     }
-    createEmployee(name:string,email:string): Promise <Employee> {
+    createEmployee(name:string,email:string,address:any): Promise <Employee> {
         const employee = new Employee();
         employee.name=name;
         employee.email=email;
+        const newAddress= new Address();
+        newAddress.line1=address.line1;
+        newAddress.pincode=address.pincode;
+        employee.address=newAddress;
         return this.employeeRepository.createAnEmployee(employee);
     }
     async updateEmployeeById(id:number,name:string,email:string): Promise <Employee>
