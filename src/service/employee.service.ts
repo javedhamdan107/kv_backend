@@ -32,11 +32,17 @@ class EmployeeService{
         employee.address=newAddress;
         return this.employeeRepository.createAnEmployee(employee);
     }
-    async updateEmployeeById(id:number,name:string,email:string): Promise <Employee>
+    async updateEmployeeById(id:number,name:string,email:string,address:any): Promise <Employee>
     {
         const employee=await this.employeeRepository.findAnEmployeeById(id);
         employee.name = name;
         employee.email = email;
+        if(employee.address && address) {
+            employee.address.line1=address.line1;
+            employee.address.pincode=address.pincode;
+        }
+        
+        
         return this.employeeRepository.updateEmployeeById(employee);
     }
     async deleteEmployeeById(id:number): Promise <Employee>

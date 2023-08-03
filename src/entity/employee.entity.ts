@@ -25,7 +25,7 @@ class Employee{
     @DeleteDateColumn()
     deletedAt: Date;
 
-    @OneToOne(()=>Address,(address)=>address.employee,{cascade:true})
+    @OneToOne(()=>Address,(address)=>address.employee,{cascade:["insert","update","soft-remove"]})
     address:Address;
 }
 
