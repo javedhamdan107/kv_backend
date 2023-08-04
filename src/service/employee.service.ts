@@ -1,3 +1,5 @@
+import CreateEmployeeDto from "../dto/create-employee.dto";
+import UpdateEmployeeDto from "../dto/update-employee.dto";
 import Address from "../entity/address.entity";
 import Employee from "../entity/employee.entity";
 import HttpException from "../exceptions/http.exception";
@@ -24,25 +26,26 @@ class EmployeeService{
         }
         return employee;
     }
-    async createEmployee(name:string,email:string,address:any,password:string): Promise <Employee> {
+    async createEmployee(createEmployeeDto:CreateEmployeeDto): Promise <Employee> {
         const employee = new Employee();
-        employee.name=name;
-        employee.email=email;
-        employee.password=await bcrypt.hash(password,10);
+        employee.name=createEmployeeDto.name;
+        employee.email=createEmployeeDto.email;
+        employee.role= createEmployeeDto.role;
+        employee.password=await bcrypt.hash(createEmployeeDto.password,10);
         const newAddress= new Address();
-        newAddress.line1=address.line1;
-        newAddress.pincode=address.pincode;
+        newAddress.line1=createEmployeeDto.address.line1;
+        newAddress.pincode=createEmployeeDto.address.pincode;
         employee.address=newAddress;
         return this.employeeRepository.createAnEmployee(employee);
     }
-    async updateEmployeeById(id:number,name:string,email:string,address:any): Promise <Employee>
+    async updateEmployeeById(id:number,updateEmployeeDto: UpdateEmployeeDto): Promise <Employee>
     {
         const employee=await this.employeeRepository.findAnEmployeeById(id);
-        employee.name = name;
-        employee.email = email;
-        if(employee.address && address) {
-            employee.address.line1=address.line1;
-            employee.address.pincode=address.pincode;
+        employee.name = updateEmployeeDto.name;
+        employee.email = updateEmployeeDto.email;
+        if(employee.address && updateEmployeeDto.address) {
+            employee.address.line1=updateEmployeeDto.address.line1;
+            employee.address.pincode=updateEmployeeDto.address.pincode;
         }
         
         
@@ -70,9 +73,10 @@ class EmployeeService{
         const payload =
         {
             name:employee.name,
-            email:employee.email
+            email:employee.email,
+            role:employee.role
         } 
-        const token =jsonwebtoken.sign(payload,"ABCDE",{
+        const token =jsonwebtoken.sign(payload,process.env.JWT_SECRET_KEY,{
             expiresIn:"1h"
         });
 

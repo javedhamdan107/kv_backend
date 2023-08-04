@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response, json } from "express";
 import jsonwebtoken from "jsonwebtoken";
+import { RequestWithUser } from "../utils/requestWithUser";
+import { jwtPayload } from "../utils/jwtPayload.type";
 
-const authenticate = async (req:Request,res:Response,next:NextFunction)=>{
+const authenticate = async (req:RequestWithUser,res:Response,next:NextFunction)=>{
     try{
         const token = getTokenFromRequestHeader(req);
-        jsonwebtoken.verify(token,"ABCDE");
+        const payload :jwtPayload=jsonwebtoken.verify(token,process.env.JWT_SECRET_KEY) as jwtPayload;
+        req.name = payload.name;
+        req.email = payload.email;
+        req.role = payload.role
         next();
     }
     catch(error)

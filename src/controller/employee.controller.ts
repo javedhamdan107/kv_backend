@@ -9,6 +9,7 @@ import PropertyRequiredError from "../exceptions/validation.errors";
 import ValidationException from "../exceptions/validation.errors";
 import UpdateEmployeeDto from "../dto/update-employee.dto";
 import authenticate from "../middleware/authenticate.middleware";
+import authorize from "../middleware/authorize.middleware";
 class EmployeeController{
     public router : express.Router;
 
@@ -18,7 +19,7 @@ class EmployeeController{
 
         this.router.get("/",authenticate,this.getAllEmployees);
         this.router.get("/:id",this.getEmployeeById);
-        this.router.post("/",this.createEmployee);
+        this.router.post("/",authenticate,authorize,this.createEmployee);
         this.router.put("/:id",this.updateEmployee);
         this.router.delete("/:id",this.deleteEmployee);
         this.router.post("/login",this.loginEmployee);
@@ -62,7 +63,7 @@ class EmployeeController{
 
             }
             else{
-                const employee = await this.employeeService.createEmployee(req.body.name,req.body.email,req.body.address,req.body.password);
+                const employee = await this.employeeService.createEmployee(createEmployeeDto);
           
             res.status(201).send(employee);
             }
@@ -88,7 +89,7 @@ class EmployeeController{
 
             }
 
-            const employee = await this.employeeService.updateEmployeeById(id,req.body.name,req.body.email,req.body.address);
+            const employee = await this.employeeService.updateEmployeeById(id,updateEmployeeDto);
             res.status(201).send(employee);
         }
         catch(error)

@@ -1,8 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, Validate, ValidateNested} from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsString, Validate, ValidateNested} from "class-validator";
 import { isStringLiteral } from "typescript";
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
+import { Column } from "typeorm";
+import { Role } from "../utils/role.enum";
 
 class CreateEmployeeDto{
     @IsNotEmpty()
@@ -21,6 +23,10 @@ class CreateEmployeeDto{
     @IsNotEmpty()
     @IsString()
     password:string
+
+    @IsNotEmpty()
+    @IsEnum(Role)
+    role:Role;
 }
 
 export default CreateEmployeeDto;
