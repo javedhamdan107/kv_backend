@@ -1,12 +1,12 @@
 import { ValidationError } from "class-validator";
 import HttpException from "./http.exception";
 
-class ValidationErrors extends Error {
+class ValidationErrors extends HttpException {
     public errors: any;
 
 
     constructor(status: number, message: string, errors: ValidationError[]) {
-        super(message);
+        super(status,message);
 
         this.errors = this.generateError(errors);
     

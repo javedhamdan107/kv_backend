@@ -2,6 +2,8 @@ import Address from "../entity/address.entity";
 import Employee from "../entity/employee.entity";
 import HttpException from "../exceptions/http.exception";
 import EmployeeRepository from "../repository/employee.repository";
+import bcrypt from "bcrypt";
+import jsonwebtoken from "jsonwebtoken";
 
 class EmployeeService{
     
@@ -22,10 +24,11 @@ class EmployeeService{
         }
         return employee;
     }
-    createEmployee(name:string,email:string,address:any): Promise <Employee> {
+    async createEmployee(name:string,email:string,address:any,password:string): Promise <Employee> {
         const employee = new Employee();
         employee.name=name;
         employee.email=email;
+        employee.password=await bcrypt.hash(password,10);
         const newAddress= new Address();
         newAddress.line1=address.line1;
         newAddress.pincode=address.pincode;
@@ -49,6 +52,31 @@ class EmployeeService{
     {
         const employee=await this.employeeRepository.findAnEmployeeById(id);
         return this.employeeRepository.deleteEmployeeById(employee);
+    }
+
+    loginEmployee = async(email:string,password:string)=>{
+        const employee= await this.employeeRepository.findAnEmployeeByEmail(email);
+        if(!employee)
+        {
+            throw new HttpException(401,"Incorrect username or Password");
+        }
+
+        const result = await bcrypt.compare(password,employee.password);
+        if(!result)
+        {
+            throw new HttpException(401,"Incorrect username or Password");
+        }
+
+        const payload =
+        {
+            name:employee.name,
+            email:employee.email
+        } 
+        const token =jsonwebtoken.sign(payload,"ABCDE",{
+            expiresIn:"1h"
+        });
+
+        return {token: token};
     }
 }
 

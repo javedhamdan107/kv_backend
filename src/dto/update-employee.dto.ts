@@ -4,7 +4,7 @@ import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
 
-class CreateEmployeeDto{
+class UpdateEmployeeDto{
     @IsNotEmpty()
     @IsString()
     name:string;
@@ -18,9 +18,6 @@ class CreateEmployeeDto{
     @Type(()=>CreateAddressDto)
     address:Address;
 
-    @IsNotEmpty()
-    @IsString()
-    password:string
 }
 
-export default CreateEmployeeDto;
+export default UpdateEmployeeDto;

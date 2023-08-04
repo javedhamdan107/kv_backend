@@ -7,6 +7,8 @@ import CreateEmployeeDto from "../dto/create-employee.dto";
 import { ValidationError, validate } from "class-validator";
 import PropertyRequiredError from "../exceptions/validation.errors";
 import ValidationException from "../exceptions/validation.errors";
+import UpdateEmployeeDto from "../dto/update-employee.dto";
+import authenticate from "../middleware/authenticate.middleware";
 class EmployeeController{
     public router : express.Router;
 
@@ -14,11 +16,12 @@ class EmployeeController{
     {
         this.router = express.Router();
 
-        this.router.get("/",this.getAllEmployees);
+        this.router.get("/",authenticate,this.getAllEmployees);
         this.router.get("/:id",this.getEmployeeById);
         this.router.post("/",this.createEmployee);
         this.router.put("/:id",this.updateEmployee);
         this.router.delete("/:id",this.deleteEmployee);
+        this.router.post("/login",this.loginEmployee);
     }
     getAllEmployees = async (req: express.Request,res:express.Response,next:NextFunction)=> {
         try{
@@ -46,9 +49,7 @@ class EmployeeController{
     createEmployee = async (req: express.Request,res:express.Response,next:NextFunction)=>{
 
         try{
-            const email=req.body.email;
-            const name=req.body.name;
-            const address=req.body.address;
+
             
             const createEmployeeDto=plainToInstance(CreateEmployeeDto,req.body);
             const errors= await validate(createEmployeeDto);
@@ -61,7 +62,7 @@ class EmployeeController{
 
             }
             else{
-                const employee = await this.employeeService.createEmployee(name,email,address);
+                const employee = await this.employeeService.createEmployee(req.body.name,req.body.email,req.body.address,req.body.password);
           
             res.status(201).send(employee);
             }
@@ -79,18 +80,15 @@ class EmployeeController{
         
         try{
             const id = Number(req.params.id);
-            const email=req.body.email;
-            const name=req.body.name;
-            const address=req.body.address;
-            const createEmployeeDto=plainToInstance(CreateEmployeeDto,req.body);
-            const errors= await validate(createEmployeeDto);
+            const updateEmployeeDto=plainToInstance(UpdateEmployeeDto,req.body);
+            const errors= await validate(updateEmployeeDto);
             if(errors.length > 0)
             {
-                //console.log(errors);
+                throw new ValidationException(400, "Validation Errors", errors);
 
             }
 
-            const employee = await this.employeeService.updateEmployeeById(id,name,email,address);
+            const employee = await this.employeeService.updateEmployeeById(id,req.body.name,req.body.email,req.body.address);
             res.status(201).send(employee);
         }
         catch(error)
@@ -112,6 +110,19 @@ class EmployeeController{
         }
         
     }
+
+    public loginEmployee = async(req:express.Request,res:express.Response,next:express.NextFunction)=>{
+        const{email,password}=req.body;
+        try{
+            const token = await this.employeeService.loginEmployee(email,password);
+            res.status(200).send({data:token})
+        }
+        catch(error)
+        {
+            next(error);
+        }
+    }
+
 }
 
 export default EmployeeController;
