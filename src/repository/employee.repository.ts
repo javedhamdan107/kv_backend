@@ -10,21 +10,21 @@ class EmployeeRepository{
     }
 
     findAllEmployees(): Promise<Employee[]> {
-        return this.employeeRepository.find();
+        return this.employeeRepository.find({
+            select: ["department"],
+            relations: ["department"]
+          });
     }
 
     findAnEmployeeById(id:number): Promise<Employee> {
         return this.employeeRepository.findOne({
             where:{id:id},
-            relations:
-            {
-                address:true,
-            }
+            relations: ["address","department"]
         });
     }
-    findAnEmployeeByEmail(email:string): Promise<Employee> {
+    findAnEmployeeByUserName(username:string): Promise<Employee> {
         return this.employeeRepository.findOne({
-            where:{email:email},
+            where:{username:username},
             relations:
             {
                 address:true,

@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, Validate, ValidateNested} from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString, Validate, ValidateNested} from "class-validator";
 import { isStringLiteral } from "typescript";
 import Address from "../entity/address.entity";
 import { Type } from "class-transformer";
@@ -12,8 +12,8 @@ class CreateEmployeeDto{
     name:string;
 
     @IsNotEmpty()
-    @IsEmail()
-    email:string;
+    @IsString()
+    username:string;
 
     @IsNotEmpty()
     @ValidateNested({each:true})
@@ -27,6 +27,19 @@ class CreateEmployeeDto{
     @IsNotEmpty()
     @IsEnum(Role)
     role:Role;
+
+    @IsNotEmpty()
+    @IsNumber()
+    experience:number
+
+    @IsNotEmpty()
+    @IsString()
+    joining_date:string
+
+
+    @IsNotEmpty()
+    @IsNumber()
+    department:number;
 }
 
 export default CreateEmployeeDto;
