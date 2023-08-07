@@ -13,6 +13,7 @@ import authorize from "../middleware/authorize.middleware";
 import authorizeWithRole from "../middleware/authorize.middleware";
 import { Role } from "../utils/role.enum";
 import SetEmployeeDto from "../dto/set-employee.dto";
+import createResponse from "../utils/createResponse";
 class EmployeeController{
     public router : express.Router;
 
@@ -31,7 +32,7 @@ class EmployeeController{
     getAllEmployees = async (req: express.Request,res:express.Response,next:NextFunction)=> {
         try{
             const employees = await this.employeeService.getAllEmployees();
-            res.status(200).send(employees);
+            res.status(200).send(createResponse(employees,"0K",null));
         }
         catch(error)
         {
@@ -43,7 +44,7 @@ class EmployeeController{
         try{
             const employeeId = Number(req.params.id);
             const employees = await this.employeeService.getEmployeeById(employeeId);
-            res.status(200).send(employees);
+            res.status(200).send(createResponse(employees,"0K",null));
         }
         catch(error)
         {
@@ -69,7 +70,7 @@ class EmployeeController{
             else{
                 const employee = await this.employeeService.createEmployee(createEmployeeDto);
           
-            res.status(201).send(employee);
+            res.status(201).send(createResponse(employee,"0K",null));
             }
 
             
@@ -94,7 +95,7 @@ class EmployeeController{
             }
 
             const employee = await this.employeeService.updateEmployeeById(id,updateEmployeeDto);
-            res.status(201).send(employee);
+            res.status(201).send(createResponse(employee,"0K",null));
         }
         catch(error)
         {
@@ -117,7 +118,7 @@ class EmployeeController{
             }
 
             const employee = await this.employeeService.updateEmployeeFieldById(id,setEmployeeDto);
-            res.status(201).send(employee);
+            res.status(201).send(createResponse(employee,"0K",null));
         }
         catch(error)
         {
@@ -143,7 +144,7 @@ class EmployeeController{
         const{username,password}=req.body;
         try{
             const token = await this.employeeService.loginEmployee(username,password);
-            res.status(200).send({data:token})
+            res.status(200).send(createResponse(token,"OK",null))
         }
         catch(error)
         {

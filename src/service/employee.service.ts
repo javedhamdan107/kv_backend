@@ -1,3 +1,4 @@
+
 import CreateEmployeeDto from "../dto/create-employee.dto";
 import SetEmployeeDto from "../dto/set-employee.dto";
 import UpdateEmployeeDto from "../dto/update-employee.dto";
@@ -8,6 +9,7 @@ import DepartmentRepository from "../repository/department.repository";
 import EmployeeRepository from "../repository/employee.repository";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
+
 
 class EmployeeService{
     
@@ -28,6 +30,11 @@ class EmployeeService{
         }
         return employee;
     }
+
+    async getEmployeeByDepartmentId(department_id:number): Promise<Employee| null> {
+        const employee= await this.employeeRepository.findAnEmployeeByDepartmentId(department_id);
+        return employee;
+    }
     async createEmployee(createEmployeeDto:CreateEmployeeDto): Promise <Employee> {
         const employee = new Employee();
         employee.name=createEmployeeDto.name;
@@ -36,7 +43,7 @@ class EmployeeService{
         employee.experience=createEmployeeDto.experience;
         employee.joining_date=createEmployeeDto.joining_date;
         
-        employee.department=createEmployeeDto.department;
+        employee.departmentId=createEmployeeDto.departmentId;
 
 
         employee.password=await bcrypt.hash(createEmployeeDto.password,10);
@@ -48,14 +55,16 @@ class EmployeeService{
         newAddress.country=createEmployeeDto.address.country;
         newAddress.pincode=createEmployeeDto.address.pincode;
         employee.address=newAddress;
-        return this.employeeRepository.createAnEmployee(employee);
+        const createdEmployee = await this.employeeRepository.createAnEmployee(employee);
+        //console.log(employee);
+        return createdEmployee;
     }
     async updateEmployeeById(id:number,updateEmployeeDto: UpdateEmployeeDto): Promise <Employee>
     {  console.log(updateEmployeeDto.address);
         const employee=await this.employeeRepository.findAnEmployeeById(id);
         employee.name = updateEmployeeDto.name;
         employee.username = updateEmployeeDto.username;
-        employee.department=updateEmployeeDto.department;
+        employee.departmentId=updateEmployeeDto.departmentId;
         employee.experience=updateEmployeeDto.experience;
         employee.joining_date=updateEmployeeDto.joining_date;
         employee.role=updateEmployeeDto.role;
@@ -78,7 +87,7 @@ class EmployeeService{
         const employee=await this.employeeRepository.findAnEmployeeById(id);
         employee.name = updateEmployeeDto.name;
         employee.username = updateEmployeeDto.username;
-        employee.department=updateEmployeeDto.department;
+        employee.departmentId=updateEmployeeDto.department;
         employee.experience=updateEmployeeDto.experience;
         employee.joining_date=updateEmployeeDto.joining_date;
         employee.role=updateEmployeeDto.role;
@@ -117,7 +126,7 @@ class EmployeeService{
         const payload =
         {
             name:employee.name,
-            email:employee.username,
+            username:employee.username,
             role:employee.role
         } 
         const token =jsonwebtoken.sign(payload,process.env.JWT_SECRET_KEY,{

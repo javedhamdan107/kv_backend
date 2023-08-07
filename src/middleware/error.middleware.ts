@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import HttpException from "../exceptions/http.exception";
 import { ValidationError } from "class-validator";
 import ValidationErrors from "../exceptions/validation.errors";
+import logger from "../utils/winston.logger";
 
 const errorMiddleware=(error:Error,req:Request,res:Response,next:NextFunction)=>{
     
@@ -9,6 +10,7 @@ const errorMiddleware=(error:Error,req:Request,res:Response,next:NextFunction)=>
         console.log(error.stack);
         if(error instanceof ValidationErrors)
         {
+            logger.error(`message:${error.message} error:${[error.errors]}`)
             res.status(error.status).send({message:error.message,errors:error.errors});
             return;
         }

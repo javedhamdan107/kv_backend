@@ -5,10 +5,14 @@ import HttpException from "../exceptions/http.exception";
 import DepartmentRepository from "../repository/department.repository";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
+import EmployeeService from "./employee.service";
+import EmployeeRepository from "../repository/employee.repository";
+import dataSource from "../db/postgres.db";
+import Employee from "../entity/employee.entity";
 
 class DepartmentService{
     
-    constructor(private departmentRepository : DepartmentRepository)
+    constructor(private departmentRepository : DepartmentRepository,private employeeService :EmployeeService)
     {
 
     }
@@ -39,7 +43,14 @@ class DepartmentService{
     }
     async deleteDepartmentById(id:number): Promise <Department>
     {
+        
         const department=await this.departmentRepository.findADepartmentById(id);
+        const employees=await this.employeeService.getEmployeeByDepartmentId(id);
+        if(employees)
+        {
+            throw new HttpException(404,`Department already has employees`);
+        }
+
         return this.departmentRepository.deleteDepartmentById(department);
     }
 

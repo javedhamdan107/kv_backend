@@ -39,7 +39,7 @@ class CreateEmployeeDto{
 
     @IsNotEmpty()
     @IsNumber()
-    department:number;
+    departmentId:number;
 }
 
 export default CreateEmployeeDto;

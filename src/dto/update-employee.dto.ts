@@ -39,7 +39,7 @@ class UpdateEmployeeDto{
 
     @IsNotEmpty()
     @IsNumber()
-    department:number;
+    departmentId:number;
 }
 
 export default UpdateEmployeeDto;

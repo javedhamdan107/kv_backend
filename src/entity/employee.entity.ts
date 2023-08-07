@@ -35,7 +35,12 @@ class Employee extends AbstractEntity{
     
 
     @ManyToOne(()=>Department,(department)=>department.employee,{cascade:true})
-    department:number;
+    department:Department;
+
+
+    @Column()
+    departmentId:number;
+    
     
 }
 

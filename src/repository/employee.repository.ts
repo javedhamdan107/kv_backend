@@ -11,15 +11,20 @@ class EmployeeRepository{
 
     findAllEmployees(): Promise<Employee[]> {
         return this.employeeRepository.find({
-            select: ["department"],
-            relations: ["department"]
+            select: ["department"]
           });
     }
 
     findAnEmployeeById(id:number): Promise<Employee> {
         return this.employeeRepository.findOne({
             where:{id:id},
-            relations: ["address","department"]
+            relations: ["address"]
+        });
+    }
+    findAnEmployeeByDepartmentId(department_id:number): Promise<Employee> {
+        return this.employeeRepository.findOne({
+            where:{departmentId:department_id},
+            relations: ["address"]
         });
     }
     findAnEmployeeByUserName(username:string): Promise<Employee> {

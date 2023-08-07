@@ -9,19 +9,31 @@ import Department from "../../entity/department.entity";
 import CreateDepartmentDto from "../../dto/create-department.dto";
 import { plainToInstance } from "class-transformer";
 import UpdateDepartmentDto from "../../dto/update-department.dto";
-dotenv.config({ path: __dirname + '/../../../.env' });
+import EmployeeRepository from "../../repository/employee.repository";
+import dataSource from "../../db/postgres.db";
+import EmployeeService from "../../service/employee.service";
+
 
 describe('Department Service Test', () => {
     let departmentService: DepartmentService;
     let departmentRepository: DepartmentRepository;
+    let employeeRepository: EmployeeRepository;
+    let employeeService: EmployeeService;
 
     beforeAll(() => {
         const dataSource: DataSource = {
             getRepository: jest.fn()
         } as unknown as DataSource;
 
+        employeeRepository = new EmployeeRepository(
+            dataSource.getRepository(Employee)
+        );
+        employeeService= new EmployeeService(employeeRepository);
         departmentRepository = new DepartmentRepository(dataSource.getRepository(Department));
-        departmentService = new DepartmentService(departmentRepository);
+        departmentService = new DepartmentService(departmentRepository,employeeService);
+
+
+               
     });
 
     describe('Test for getDepartmentById', () => {
@@ -63,13 +75,30 @@ describe('Department Service Test', () => {
             const department_body = {
                 name: "name"
             };
+            const sample_department= new Department();
             const mockFunction = jest.fn();
-            const createDepartmentDto = plainToInstance(CreateDepartmentDto, department_body)
-            when(mockFunction).mockResolvedValue({ id: 1 ,name:"name"});
+            const createDepartmentDto = plainToInstance(CreateDepartmentDto, department_body);
+            sample_department.name=createDepartmentDto.name;
+            when(mockFunction).calledWith(sample_department).mockResolvedValue({ id: 1 ,name:"name"});
             departmentRepository.createADepartment = mockFunction;
             const department = await departmentService.createDepartment(createDepartmentDto);
             expect(department).toStrictEqual({ id: 1,name:"name"});
         });
+
+        // test('Test case failure for createDepartment', async () => {
+        //     const department_body = {
+        //         name: "name"
+        //     };
+        //     const sample_department= new Department();
+        //     const mockFunction = jest.fn();
+        //     const createDepartmentDto = plainToInstance(CreateDepartmentDto, department_body);
+        //     sample_department.name=createDepartmentDto.name;
+        //     when(mockFunction).calledWith(sample_department).mockResolvedValue({ id: 1 ,name:"name"});
+        //     departmentRepository.createADepartment = mockFunction;
+        //     // const department = await departmentService.createDepartment(createDepartmentDto);
+        //     // expect(department).toStrictEqual({ id: 1,name:"name"});
+        //     expect(async () =>  await departmentService.createDepartment(createDepartmentDto) ).rejects.toThrowError();
+        // });
         // test('Test case failure for createDepartment', async () => {
         //     const department_body = {
         //         name: "name"
@@ -87,13 +116,13 @@ describe('Department Service Test', () => {
                 name: "name"
             };
 
-            const mockFunction1 = jest.fn();
-            when(mockFunction1).calledWith(1).mockResolvedValueOnce({ id: 1, name: "OLD NAME" });
-            departmentRepository.findADepartmentById = mockFunction1;
+            const mockFunction_1 = jest.fn();
+            when(mockFunction_1).calledWith(1).mockResolvedValueOnce({ id: 1, name: "OLD NAME" });
+            departmentRepository.findADepartmentById = mockFunction_1;
 
-            const mockFunction2 = jest.fn();
-            when(mockFunction2).mockResolvedValue({ id: 1, name: "name" });
-            departmentRepository.updateDepartmentById = mockFunction2;
+            const mockFunction_2 = jest.fn();
+            when(mockFunction_2).mockResolvedValue({ id: 1, name: "name" });
+            departmentRepository.updateDepartmentById = mockFunction_2;
             const updatedDepartment=await departmentService.updateDepartmentById(1, plainToInstance(UpdateDepartmentDto, body))
 
             expect(updatedDepartment).toStrictEqual({ id: 1, name: "name" })
@@ -105,8 +134,14 @@ describe('Department Service Test', () => {
                 departmentRepository.findADepartmentById = mockFunction1;
 
                 const mockFunction2 = jest.fn();
-                when(mockFunction2).mockResolvedValue({});
-                departmentRepository.deleteDepartmentById = mockFunction2;
+                when(mockFunction2).calledWith(1).mockResolvedValueOnce(null);
+               
+
+                employeeService.getEmployeeByDepartmentId = mockFunction2;
+
+                const mockFunction3 = jest.fn();
+                when(mockFunction3).mockResolvedValue({});
+                departmentRepository.deleteDepartmentById = mockFunction3;
                 const deletedDepartment=await departmentService.deleteDepartmentById(1)
 
                 expect(deletedDepartment).toStrictEqual({});

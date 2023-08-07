@@ -4,7 +4,7 @@ import "reflect-metadata";
 import express, { NextFunction, Request, Response } from "express";
 import dataSource from "./db/postgres.db";
 import loggerMiddleware from "./middleware/logger.middleware";
-import employeeRoute from "./route/employee.route";
+import { employeeRoute } from "./route/employee.route";
 import HttpException from "./exceptions/http.exception";
 import errorMiddleware from "./middleware/error.middleware";
 import rolesRoute from "./route/roles.route";
