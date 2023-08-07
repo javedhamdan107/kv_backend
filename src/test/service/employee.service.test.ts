@@ -10,6 +10,7 @@ import bcrypt from "bcrypt";
 import * as dotenv from "dotenv";
 import HttpException from "../../exceptions/http.exception";
 import { Role } from "../../utils/role.enum";
+import SetEmployeeDto from "../../dto/set-employee.dto";
 
 describe('Employee Service Test', () => {
     let employeeService: EmployeeService;
@@ -127,6 +128,26 @@ describe('Employee Service Test', () => {
 
             expect(updatedEmployee).toStrictEqual({ id: 1, username: "name" })
         });
+
+        test('Test case success for updateEmployeeField with id = 1', async () => {
+            const body = {
+                username: "name",
+                password:"pass"
+            };
+
+            const mockFunction_1 = jest.fn();
+            when(mockFunction_1).calledWith(1).mockResolvedValueOnce({ id: 1, username: "OLD NAME" });
+            employeeRepository.findAnEmployeeById = mockFunction_1;
+
+            const mockFunction_2 = jest.fn();
+            when(mockFunction_2).mockResolvedValue({ id: 1, username: "name" });
+            employeeRepository.updateEmployeeById = mockFunction_2;
+            const updatedEmployee=await employeeService.updateEmployeeFieldById(1, plainToInstance(SetEmployeeDto, body))
+
+            expect(updatedEmployee).toStrictEqual({ id: 1, username: "name" })
+        });
+
+
 
         test('Test case success for deleteEmployee with id = 1', async () => {
             const mockFunction_1 = jest.fn();

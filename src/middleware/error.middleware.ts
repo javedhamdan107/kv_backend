@@ -10,12 +10,12 @@ const errorMiddleware=(error:Error,req:Request,res:Response,next:NextFunction)=>
         console.log(error.stack);
         if(error instanceof ValidationErrors)
         {
-            logger.error(`message:${error.message} error:${[error.errors]}`)
+            logger.error(`status :${error.status} message:${error.message} `)
             res.status(error.status).send({message:error.message,errors:error.errors});
             return;
         }
         else if(error instanceof HttpException)
-        {
+        {   logger.error(`status :${error.status} message:${error.message} `)
             res.status(error.status).send({error:error.message});
             return;
         }

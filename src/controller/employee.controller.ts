@@ -14,6 +14,7 @@ import authorizeWithRole from "../middleware/authorize.middleware";
 import { Role } from "../utils/role.enum";
 import SetEmployeeDto from "../dto/set-employee.dto";
 import createResponse from "../utils/createResponse";
+import logger from "../utils/winston.logger";
 class EmployeeController{
     public router : express.Router;
 
@@ -33,6 +34,7 @@ class EmployeeController{
         try{
             const employees = await this.employeeService.getAllEmployees();
             res.status(200).send(createResponse(employees,"0K",null));
+            logger.info('Recieved All Departments');
         }
         catch(error)
         {
@@ -45,6 +47,7 @@ class EmployeeController{
             const employeeId = Number(req.params.id);
             const employees = await this.employeeService.getEmployeeById(employeeId);
             res.status(200).send(createResponse(employees,"0K",null));
+            logger.info(`Recieved Department with id ${employees.id}`);
         }
         catch(error)
         {
@@ -71,6 +74,7 @@ class EmployeeController{
                 const employee = await this.employeeService.createEmployee(createEmployeeDto);
           
             res.status(201).send(createResponse(employee,"0K",null));
+            logger.info(`Created Department with id ${employee.id}`);
             }
 
             
@@ -96,6 +100,7 @@ class EmployeeController{
 
             const employee = await this.employeeService.updateEmployeeById(id,updateEmployeeDto);
             res.status(201).send(createResponse(employee,"0K",null));
+            logger.info(`Created Department with id ${employee.id}`);
         }
         catch(error)
         {
@@ -119,6 +124,7 @@ class EmployeeController{
 
             const employee = await this.employeeService.updateEmployeeFieldById(id,setEmployeeDto);
             res.status(201).send(createResponse(employee,"0K",null));
+            logger.info(`Created Department with id ${employee.id}`);
         }
         catch(error)
         {
@@ -132,6 +138,7 @@ class EmployeeController{
             const employeeId = Number(req.params.id);
             await this.employeeService.deleteEmployeeById(employeeId);
             res.status(204).send('employee deleted');
+            logger.info(`Created Department with id ${employeeId}`);
         }
         catch(error)
         {
@@ -145,6 +152,7 @@ class EmployeeController{
         try{
             const token = await this.employeeService.loginEmployee(username,password);
             res.status(200).send(createResponse(token,"OK",null))
+            logger.info(`Logged in User ${username}`);
         }
         catch(error)
         {

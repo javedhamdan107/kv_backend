@@ -13,6 +13,7 @@ import authorize from "../middleware/authorize.middleware";
 import DepartmentService from "../service/department.service";
 import CreateDepartmentDto from "../dto/create-department.dto";
 import UpdateDepartmentDto from "../dto/update-department.dto";
+import logger from "../utils/winston.logger";
 class DepartmentController{
     public router : express.Router;
 
@@ -31,6 +32,7 @@ class DepartmentController{
         try{
             const departments = await this.departmentService.getAllDepartment();
             res.status(200).send(departments);
+            logger.info('recieved all departments');
         }
         catch(error)
         {
@@ -43,6 +45,7 @@ class DepartmentController{
             const departmentId = Number(req.params.id);
             const department = await this.departmentService.getDepartmentById(departmentId);
             res.status(200).send(department);
+            logger.info(`Recived Department with ${departmentId}`)
         }
         catch(error)
         {
@@ -69,6 +72,7 @@ class DepartmentController{
                 const department = await this.departmentService.createDepartment(createDepartmentDto);
           
             res.status(201).send(department);
+            logger.info(`Created Department with id ${department.id}`)
             }
 
             
@@ -94,6 +98,7 @@ class DepartmentController{
 
             const department = await this.departmentService.updateDepartmentById(id,updateDepartmentDto);
             res.status(201).send(department);
+            logger.info(`Updated Department with id ${department.id}`)
         }
         catch(error)
         {
@@ -107,6 +112,7 @@ class DepartmentController{
             const departmentId = Number(req.params.id);
             await this.departmentService.deleteDepartmentById(departmentId);
             res.status(204).send('department deleted');
+            logger.info(`Deleted Department with id ${departmentId}`)
         }
         catch(error)
         {
