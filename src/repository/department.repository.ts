@@ -12,17 +12,20 @@ class DepartmentRepository{
 
 
  
-    findAllDepartment(): Promise<Department[]> {
-        return this.departmentRepository.find();
+    findAllDepartment(offset:number,pageLength:number): Promise<[Department[],number]> {
+        return this.departmentRepository.findAndCount({
+            skip: offset * pageLength,
+            take: pageLength
+        });
     }
 
-    findADepartmentById(id:number): Promise<Department> {
+    findDepartmentById(id:number): Promise<Department> {
         return this.departmentRepository.findOne({
             where:{id:id}
         });
     }
 
-    createADepartment(newDepartment:Department): Promise<Department> {
+    createDepartment(newDepartment:Department): Promise<Department> {
         return this.departmentRepository.save(newDepartment)
     }
     

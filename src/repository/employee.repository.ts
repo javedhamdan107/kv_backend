@@ -9,25 +9,27 @@ class EmployeeRepository{
 
     }
 
-    findAllEmployees(): Promise<Employee[]> {
-        return this.employeeRepository.find({
+    findAllEmployees(offset: number, pageLength: number):  Promise<[Employee[], number]>  {
+        return this.employeeRepository.findAndCount({
+            skip: offset * pageLength,
+            take: pageLength,
             select: ["department"]
           });
     }
 
-    findAnEmployeeById(id:number): Promise<Employee> {
+    findEmployeeById(id:number): Promise<Employee> {
         return this.employeeRepository.findOne({
             where:{id:id},
             relations: ["address"]
         });
     }
-    findAnEmployeeByDepartmentId(department_id:number): Promise<Employee> {
+    findEmployeeByDepartmentId(department_id:number): Promise<Employee> {
         return this.employeeRepository.findOne({
             where:{departmentId:department_id},
             relations: ["address"]
         });
     }
-    findAnEmployeeByUserName(username:string): Promise<Employee> {
+    findEmployeeByUserName(username:string): Promise<Employee> {
         return this.employeeRepository.findOne({
             where:{username:username},
             relations:
@@ -36,7 +38,7 @@ class EmployeeRepository{
             }
         });
     }
-    createAnEmployee(newEmployee:Employee): Promise<Employee> {
+    createEmployee(newEmployee:Employee): Promise<Employee> {
         return this.employeeRepository.save(newEmployee)
     }
     

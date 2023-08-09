@@ -17,12 +17,12 @@ class DepartmentService{
 
     }
 
-    getAllDepartment(): Promise<Department[]> {
-        return this.departmentRepository.findAllDepartment();
+    getAllDepartment(offset:number,pageLength:number): Promise<[Department[],number]> {
+        return this.departmentRepository.findAllDepartment(offset,pageLength);
     }
 
     async getDepartmentById(id:number): Promise<Department| null> {
-        const department= await this.departmentRepository.findADepartmentById(id);
+        const department= await this.departmentRepository.findDepartmentById(id);
         if(!department)
         {
             throw new HttpException(404,`Department not Found with id:${id}`);
@@ -32,11 +32,11 @@ class DepartmentService{
     async createDepartment(createDepartmentDto:CreateDepartmentDto): Promise <Department> {
         const department = new Department();
         department.name=createDepartmentDto.name;
-        return this.departmentRepository.createADepartment(department);
+        return this.departmentRepository.createDepartment(department);
     }
     async updateDepartmentById(id:number,updateDepartmentDto: UpdateDepartmentDto): Promise <Department>
     {
-        const department=await this.departmentRepository.findADepartmentById(id);
+        const department=await this.departmentRepository.findDepartmentById(id);
         department.name = updateDepartmentDto.name;
         
         return this.departmentRepository.updateDepartmentById(department);
@@ -44,11 +44,11 @@ class DepartmentService{
     async deleteDepartmentById(id:number): Promise <Department>
     {
         
-        const department=await this.departmentRepository.findADepartmentById(id);
+        const department=await this.departmentRepository.findDepartmentById(id);
         const employees=await this.employeeService.getEmployeeByDepartmentId(id);
         if(employees)
         {
-            throw new HttpException(404,`Department already has employees`);
+            throw new HttpException(400,`Department already has employees`);
         }
 
         return this.departmentRepository.deleteDepartmentById(department);

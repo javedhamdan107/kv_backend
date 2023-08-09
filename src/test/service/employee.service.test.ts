@@ -30,7 +30,7 @@ describe('Employee Service Test', () => {
         test('Test case success for getEmployeeById for id 1', async () => {
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(1).mockResolvedValueOnce({ id: 1, name: "Name" });
-            employeeRepository.findAnEmployeeById = mockFunction;
+            employeeRepository.findEmployeeById = mockFunction;
             const employee = await employeeService.getEmployeeById(1);
             expect(employee).toStrictEqual({ id: 1, name: "Name" });
         });
@@ -38,24 +38,24 @@ describe('Employee Service Test', () => {
         test('Test case failure for getEmployeeById for id 2', async () => {
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(2).mockResolvedValueOnce(null);
-            employeeRepository.findAnEmployeeById = mockFunction;
+            employeeRepository.findEmployeeById = mockFunction;
             await expect(async () => { await employeeService.getEmployeeById(2) }).rejects.toThrowError(HttpException);
         });
 
         test('Test case success for getAllEmployees', async () => {
             const mockFunction = jest.fn();
-            when(mockFunction).calledWith().mockResolvedValueOnce([{ id: 1, name: "Name" }]);
+            when(mockFunction).calledWith(0,1).mockResolvedValueOnce([[{ id: 1, name: "Name" }],1]);
             employeeRepository.findAllEmployees = mockFunction;
-            const employee = await employeeService.getAllEmployees();
-            expect(employee).toStrictEqual([{ id: 1, name: "Name" }]);
+            const [employee,total] = await employeeService.getAllEmployees(0,1);
+            expect([employee,total]).toStrictEqual([[{ id: 1, name: "Name" }],1]);
         });
 
         test('Test case empty result for getAllEmployees', async () => {
             const mockFunction = jest.fn();
-            when(mockFunction).calledWith().mockResolvedValueOnce([]);
+            when(mockFunction).calledWith(0,1).mockResolvedValueOnce([[],0]);
             employeeRepository.findAllEmployees = mockFunction;
-            const employees = await employeeService.getAllEmployees();
-            expect(employees).toStrictEqual([]);
+            const[employee,total] = await employeeService.getAllEmployees(0,1);
+            expect([employee,total]).toStrictEqual([[],0]);
         });
 
         test('Test case success for createEmployee', async () => {
@@ -94,7 +94,7 @@ describe('Employee Service Test', () => {
             sample_employee.experience=createEmployeeDto.experience;
             //console.log(sample_employee);
             when(mockFunction).calledWith(sample_employee).mockResolvedValueOnce({ id: 1 ,username:"name"});
-            employeeRepository.createAnEmployee = mockFunction;
+            employeeRepository.createEmployee = mockFunction;
             when(mockFunction2).calledWith("password",10).mockResolvedValueOnce("$2b$10$hmIuWSmpHajuKyb6Cy/8hO31VqUY3/KiJOeGfsT8lVEuUbuqt4op.")
             bcrypt.hash=mockFunction2;
             
@@ -107,7 +107,7 @@ describe('Employee Service Test', () => {
             const createEmployeeDto = plainToInstance(CreateEmployeeDto, { username: "name" });
             
             when(mockFunction).calledWith(createEmployeeDto).mockResolvedValueOnce({ username: "name" });
-            employeeRepository.createAnEmployee = mockFunction;
+            employeeRepository.createEmployee = mockFunction;
             await expect(async () => await employeeService.createEmployee(createEmployeeDto)).rejects.toThrowError();
         });
 
@@ -119,7 +119,7 @@ describe('Employee Service Test', () => {
 
             const mockFunction_1 = jest.fn();
             when(mockFunction_1).calledWith(1).mockResolvedValueOnce({ id: 1, username: "OLD NAME" });
-            employeeRepository.findAnEmployeeById = mockFunction_1;
+            employeeRepository.findEmployeeById = mockFunction_1;
 
             const mockFunction_2 = jest.fn();
             when(mockFunction_2).mockResolvedValue({ id: 1, username: "name" });
@@ -137,7 +137,7 @@ describe('Employee Service Test', () => {
 
             const mockFunction_1 = jest.fn();
             when(mockFunction_1).calledWith(1).mockResolvedValueOnce({ id: 1, username: "OLD NAME" });
-            employeeRepository.findAnEmployeeById = mockFunction_1;
+            employeeRepository.findEmployeeById = mockFunction_1;
 
             const mockFunction_2 = jest.fn();
             when(mockFunction_2).mockResolvedValue({ id: 1, username: "name" });
@@ -152,7 +152,7 @@ describe('Employee Service Test', () => {
         test('Test case success for deleteEmployee with id = 1', async () => {
             const mockFunction_1 = jest.fn();
             when(mockFunction_1).calledWith("1").mockResolvedValueOnce({ id: 1, username: "name" });
-            employeeRepository.findAnEmployeeById = mockFunction_1;
+            employeeRepository.findEmployeeById = mockFunction_1;
 
             const mockFunction_2 = jest.fn();
             when(mockFunction_2).mockResolvedValue({});
@@ -175,7 +175,7 @@ describe('Employee Service Test', () => {
 
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(employee.username).mockResolvedValueOnce(employee);
-            employeeRepository.findAnEmployeeByUserName = mockFunction;
+            employeeRepository.findEmployeeByUserName = mockFunction;
 
             const token = await employeeService.loginEmployee("username","password");
             expect(token).toBeDefined();
@@ -193,7 +193,7 @@ describe('Employee Service Test', () => {
 
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(employee.username).mockResolvedValueOnce(null);
-            employeeRepository.findAnEmployeeByUserName = mockFunction;
+            employeeRepository.findEmployeeByUserName = mockFunction;
 
             await expect(async () => await employeeService.loginEmployee("name","password")).rejects.toThrowError(HttpException);
         });
@@ -208,7 +208,7 @@ describe('Employee Service Test', () => {
 
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(employee.username).mockResolvedValueOnce(employee);
-            employeeRepository.findAnEmployeeByUserName = mockFunction;
+            employeeRepository.findEmployeeByUserName = mockFunction;
 
             await expect(async () => await employeeService.loginEmployee("username","pass")).rejects.toThrowError(HttpException);
         });

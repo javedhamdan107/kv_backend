@@ -18,12 +18,12 @@ class EmployeeService{
 
     }
 
-    getAllEmployees(): Promise<Employee[]> {
-        return this.employeeRepository.findAllEmployees();
+    getAllEmployees(offset:number,pageLength:number):  Promise<[Employee[], number]> {
+        return this.employeeRepository.findAllEmployees(offset,pageLength);
     }
 
     async getEmployeeById(id:number): Promise<Employee| null> {
-        const employee= await this.employeeRepository.findAnEmployeeById(id);
+        const employee= await this.employeeRepository.findEmployeeById(id);
         if(!employee)
         {
             throw new HttpException(404,`Employee not Found with id:${id}`);
@@ -32,7 +32,7 @@ class EmployeeService{
     }
 
     async getEmployeeByDepartmentId(department_id:number): Promise<Employee| null> {
-        const employee= await this.employeeRepository.findAnEmployeeByDepartmentId(department_id);
+        const employee= await this.employeeRepository.findEmployeeByDepartmentId(department_id);
         return employee;
     }
     async createEmployee(createEmployeeDto:CreateEmployeeDto): Promise <Employee> {
@@ -42,10 +42,9 @@ class EmployeeService{
         employee.role= createEmployeeDto.role;
         employee.experience=createEmployeeDto.experience;
         employee.joining_date=createEmployeeDto.joining_date;
-        
         employee.departmentId=createEmployeeDto.departmentId;
 
-
+        //to check for  exisintg dept
         employee.password=await bcrypt.hash(createEmployeeDto.password,10);
         const newAddress= new Address();
         newAddress.address_line_1=createEmployeeDto.address.address_line_1;
@@ -55,13 +54,13 @@ class EmployeeService{
         newAddress.country=createEmployeeDto.address.country;
         newAddress.pincode=createEmployeeDto.address.pincode;
         employee.address=newAddress;
-        const createdEmployee = await this.employeeRepository.createAnEmployee(employee);
+        const createdEmployee = await this.employeeRepository.createEmployee(employee);
         //console.log(employee);
         return createdEmployee;
     }
     async updateEmployeeById(id:number,updateEmployeeDto: UpdateEmployeeDto): Promise <Employee>
     {  console.log(updateEmployeeDto.address);
-        const employee=await this.employeeRepository.findAnEmployeeById(id);
+        const employee=await this.employeeRepository.findEmployeeById(id);
         employee.name = updateEmployeeDto.name;
         employee.username = updateEmployeeDto.username;
         employee.departmentId=updateEmployeeDto.departmentId;
@@ -84,10 +83,10 @@ class EmployeeService{
     }
     async updateEmployeeFieldById(id:number,updateEmployeeDto: SetEmployeeDto): Promise <Employee>
     {  console.log(updateEmployeeDto.address);
-        const employee=await this.employeeRepository.findAnEmployeeById(id);
+        const employee=await this.employeeRepository.findEmployeeById(id);
         employee.name = updateEmployeeDto.name;
         employee.username = updateEmployeeDto.username;
-        employee.departmentId=updateEmployeeDto.department;
+        employee.departmentId=updateEmployeeDto.departmentId;
         employee.experience=updateEmployeeDto.experience;
         employee.joining_date=updateEmployeeDto.joining_date;
         employee.role=updateEmployeeDto.role;
@@ -106,12 +105,12 @@ class EmployeeService{
     }
     async deleteEmployeeById(id:number): Promise <Employee>
     {
-        const employee=await this.employeeRepository.findAnEmployeeById(id);
+        const employee=await this.employeeRepository.findEmployeeById(id);
         return this.employeeRepository.deleteEmployeeById(employee);
     }
 
     loginEmployee = async(username:string,password:string)=>{
-        const employee= await this.employeeRepository.findAnEmployeeByUserName(username);
+        const employee= await this.employeeRepository.findEmployeeByUserName(username);
         if(!employee)
         {
             throw new HttpException(401,"Incorrect username or Password");

@@ -11,6 +11,7 @@ import UpdateEmployeeDto from "../dto/update-employee.dto";
 import authenticate from "../middleware/authenticate.middleware";
 import authorize from "../middleware/authorize.middleware";
 import { Role } from "../utils/role.enum";
+import createResponse from "../utils/createResponse";
 class RolesController{
     public router : express.Router;
 
@@ -18,7 +19,7 @@ class RolesController{
     {
         this.router = express.Router();
 
-        this.router.get("/",this.getAllRoles);
+        this.router.get("/",authenticate,authorize([Role.HR,Role.Admin]),this.getAllRoles);
     }
     getAllRoles = async (req: express.Request,res:express.Response,next:NextFunction)=> {
         try{
@@ -28,7 +29,7 @@ class RolesController{
                 "data":data
             }
 
-            res.status(200).send(rolesObj);
+            res.status(200).send(createResponse(rolesObj,"OK",null,data.length));
         }
         catch(error)
         {

@@ -14,6 +14,8 @@ import DepartmentService from "../service/department.service";
 import CreateDepartmentDto from "../dto/create-department.dto";
 import UpdateDepartmentDto from "../dto/update-department.dto";
 import logger from "../utils/winston.logger";
+import { Role } from "../utils/role.enum";
+import createResponse from "../utils/createResponse";
 class DepartmentController{
     public router : express.Router;
 
@@ -23,15 +25,17 @@ class DepartmentController{
 
         this.router.get("/",this.getAllDepartment);
         this.router.get("/:id",this.getDepartmentById);
-        this.router.post("/",this.createDepartment);
-        this.router.put("/:id",this.updateDepartment);
-        this.router.delete("/:id",this.deleteDepartment);
+        this.router.post("/",authenticate,authorize([Role.HR,Role.Admin]),this.createDepartment);
+        this.router.put("/:id",authenticate,authorize([Role.HR,Role.Admin]),this.updateDepartment);
+        this.router.delete("/:id",authenticate,authorize([Role.HR,Role.Admin]),this.deleteDepartment);
 
     }
     getAllDepartment = async (req: express.Request,res:express.Response,next:NextFunction)=> {
         try{
-            const departments = await this.departmentService.getAllDepartment();
-            res.status(200).send(departments);
+            const offset = Number(req.query.offset ? req.query.offset : 0);
+            const pageLength = Number(req.query.length ? req.query.length : 10);
+            const [departments,total] = await this.departmentService.getAllDepartment(offset,pageLength);
+            res.status(200).send(createResponse(departments,"OK",null,total));
             logger.info('recieved all departments');
         }
         catch(error)
@@ -44,7 +48,7 @@ class DepartmentController{
         try{
             const departmentId = Number(req.params.id);
             const department = await this.departmentService.getDepartmentById(departmentId);
-            res.status(200).send(department);
+            res.status(200).send(createResponse(department,"OK",null,1));
             logger.info(`Recived Department with ${departmentId}`)
         }
         catch(error)
@@ -71,7 +75,7 @@ class DepartmentController{
             else{
                 const department = await this.departmentService.createDepartment(createDepartmentDto);
           
-            res.status(201).send(department);
+            res.status(201).send(createResponse(department,"OK",null,1));
             logger.info(`Created Department with id ${department.id}`)
             }
 
@@ -97,7 +101,7 @@ class DepartmentController{
             }
 
             const department = await this.departmentService.updateDepartmentById(id,updateDepartmentDto);
-            res.status(201).send(department);
+            res.status(201).send(createResponse(department,"OK",null,1));
             logger.info(`Updated Department with id ${department.id}`)
         }
         catch(error)

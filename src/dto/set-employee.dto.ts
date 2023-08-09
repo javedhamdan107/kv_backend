@@ -39,7 +39,7 @@ class SetEmployeeDto{
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsNumber()
-    department:number;
+    departmentId:number;
 }
 
 export default SetEmployeeDto;

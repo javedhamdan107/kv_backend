@@ -32,8 +32,10 @@ class EmployeeController{
     }
     getAllEmployees = async (req: express.Request,res:express.Response,next:NextFunction)=> {
         try{
-            const employees = await this.employeeService.getAllEmployees();
-            res.status(200).send(createResponse(employees,"0K",null));
+            const offset = Number(req.query.offset ? req.query.offset : 0);
+            const pageLength = Number(req.query.length ? req.query.length : 10);
+            const [employees,total] = await this.employeeService.getAllEmployees(offset,pageLength);
+            res.status(200).send(createResponse(employees,"0K",null,total));
             logger.info('Recieved All Departments');
         }
         catch(error)
@@ -46,7 +48,7 @@ class EmployeeController{
         try{
             const employeeId = Number(req.params.id);
             const employees = await this.employeeService.getEmployeeById(employeeId);
-            res.status(200).send(createResponse(employees,"0K",null));
+            res.status(200).send(createResponse(employees,"0K",null,1));
             logger.info(`Recieved Department with id ${employees.id}`);
         }
         catch(error)
@@ -73,7 +75,7 @@ class EmployeeController{
             else{
                 const employee = await this.employeeService.createEmployee(createEmployeeDto);
           
-            res.status(201).send(createResponse(employee,"0K",null));
+            res.status(201).send(createResponse(employee,"0K",null,1));
             logger.info(`Created Department with id ${employee.id}`);
             }
 
@@ -99,7 +101,7 @@ class EmployeeController{
             }
 
             const employee = await this.employeeService.updateEmployeeById(id,updateEmployeeDto);
-            res.status(201).send(createResponse(employee,"0K",null));
+            res.status(201).send(createResponse(employee,"0K",null,1));
             logger.info(`Created Department with id ${employee.id}`);
         }
         catch(error)
@@ -123,7 +125,7 @@ class EmployeeController{
             }
 
             const employee = await this.employeeService.updateEmployeeFieldById(id,setEmployeeDto);
-            res.status(201).send(createResponse(employee,"0K",null));
+            res.status(201).send(createResponse(employee,"0K",null,1));
             logger.info(`Created Department with id ${employee.id}`);
         }
         catch(error)
@@ -151,7 +153,7 @@ class EmployeeController{
         const{username,password}=req.body;
         try{
             const token = await this.employeeService.loginEmployee(username,password);
-            res.status(200).send(createResponse(token,"OK",null))
+            res.status(200).send(createResponse(token,"OK",null,1))
             logger.info(`Logged in User ${username}`);
         }
         catch(error)

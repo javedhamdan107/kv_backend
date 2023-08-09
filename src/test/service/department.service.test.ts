@@ -40,7 +40,7 @@ describe('Department Service Test', () => {
         test('Test case success for getDepartmentById for id 1', async () => {
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(1).mockResolvedValueOnce({ id: 1, name: "Name" });
-            departmentRepository.findADepartmentById = mockFunction;
+            departmentRepository.findDepartmentById = mockFunction;
             const department = await departmentService.getDepartmentById(1);
             expect(department).toStrictEqual({ id: 1, name: "Name" });
         });
@@ -48,24 +48,24 @@ describe('Department Service Test', () => {
         test('Test case failure for getDepartmentById for id 2', async () => {
             const mockFunction = jest.fn();
             when(mockFunction).calledWith(2).mockResolvedValueOnce(null);
-            departmentRepository.findADepartmentById = mockFunction;
+            departmentRepository.findDepartmentById = mockFunction;
             expect(async () => { await departmentService.getDepartmentById(2) }).rejects.toThrowError(HttpException);
         });
 
         test('Test case success for getAllDepartments', async () => {
             const mockFunction = jest.fn();
-            when(mockFunction).calledWith().mockResolvedValueOnce([{ id: 1, name: "Name" }]);
+            when(mockFunction).calledWith(0,1).mockResolvedValueOnce([[{ id: 1, name: "Name" }],1]);
             departmentRepository.findAllDepartment = mockFunction;
-            const department = await departmentService.getAllDepartment();
-            expect(department).toStrictEqual([{ id: 1, name: "Name" }]);
+            const [department,total] = await departmentService.getAllDepartment(0,1);
+            expect([department,total]).toStrictEqual([[{ id: 1, name: "Name" }],1]);
         });
 
         test('Test case empty for getAllDepartments', async () => {
             const mockFunction = jest.fn();
-            when(mockFunction).calledWith().mockResolvedValueOnce([]);
+            when(mockFunction).calledWith(0,1).mockResolvedValueOnce([[],0]);
             departmentRepository.findAllDepartment = mockFunction;
-            const department = await departmentService.getAllDepartment();
-            expect(department).toStrictEqual([]);
+            const [department,total]= await departmentService.getAllDepartment(0,1);
+            expect([department,total]).toStrictEqual([[],0]);
         });
         
 
@@ -80,7 +80,7 @@ describe('Department Service Test', () => {
             const createDepartmentDto = plainToInstance(CreateDepartmentDto, department_body);
             sample_department.name=createDepartmentDto.name;
             when(mockFunction).calledWith(sample_department).mockResolvedValue({ id: 1 ,name:"name"});
-            departmentRepository.createADepartment = mockFunction;
+            departmentRepository.createDepartment = mockFunction;
             const department = await departmentService.createDepartment(createDepartmentDto);
             expect(department).toStrictEqual({ id: 1,name:"name"});
         });
@@ -118,7 +118,7 @@ describe('Department Service Test', () => {
 
             const mockFunction_1 = jest.fn();
             when(mockFunction_1).calledWith(1).mockResolvedValueOnce({ id: 1, name: "OLD NAME" });
-            departmentRepository.findADepartmentById = mockFunction_1;
+            departmentRepository.findDepartmentById = mockFunction_1;
 
             const mockFunction_2 = jest.fn();
             when(mockFunction_2).mockResolvedValue({ id: 1, name: "name" });
@@ -131,7 +131,7 @@ describe('Department Service Test', () => {
             test('Test case success for deleteDepartment with id = 1', async () => {
                 const mockFunction1 = jest.fn();
                 when(mockFunction1).calledWith(1).mockResolvedValueOnce({ id: 1, name: "name" });
-                departmentRepository.findADepartmentById = mockFunction1;
+                departmentRepository.findDepartmentById = mockFunction1;
 
                 const mockFunction2 = jest.fn();
                 when(mockFunction2).calledWith(1).mockResolvedValueOnce(null);

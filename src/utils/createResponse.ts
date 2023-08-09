@@ -1,4 +1,4 @@
-const createResponse = (data:object,message:string,error:string)=>
+const createResponse = (data:object,message:string,error:string,total:number)=>
 {
     const responseObj={
         data:{},
@@ -11,7 +11,7 @@ const createResponse = (data:object,message:string,error:string)=>
     responseObj["message"]=message;
     responseObj["error"]=error;
     responseObj["meta"]={length:data instanceof Array?data.length:1,
-                        tot:1};
+                        tot:total};
     return responseObj;
 }
 
