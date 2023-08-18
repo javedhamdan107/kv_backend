@@ -5,6 +5,7 @@ import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
 import { Column } from "typeorm";
 import { Role } from "../utils/role.enum";
+import { Status } from "../utils/status.enum";
 
 
 class UpdateEmployeeDto{
@@ -36,6 +37,10 @@ class UpdateEmployeeDto{
     @IsNotEmpty()
     @IsString()
     joining_date:string
+
+    @IsNotEmpty()
+    @IsEnum(Status)
+    status:Status
 
     @IsNotEmpty()
     @IsNumber()

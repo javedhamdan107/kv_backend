@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config({path:__dirname+'/.env'});
 import "reflect-metadata";
+import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import dataSource from "./db/postgres.db";
 import loggerMiddleware from "./middleware/logger.middleware";
@@ -12,6 +13,7 @@ import departmentRoute from "./route/department.route";
 
 
 const server=express();
+server.use(cors());
 server.use(express.json());
 server.use(loggerMiddleware);
 server.use('/employees',employeeRoute);

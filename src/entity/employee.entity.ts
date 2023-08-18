@@ -3,6 +3,7 @@ import Address from "./address.entity";
 import AbstractEntity from "./abstract-entity";
 import { Role } from "../utils/role.enum";
 import Department from "./department.entity";
+import { Status } from "../utils/status.enum";
 // import Department from "./department.entity";
 
 
@@ -29,6 +30,9 @@ class Employee extends AbstractEntity{
 
     @Column()
     joining_date:string
+
+    @Column({default:Status.ACTIVE})
+    status:Status;
 
     @Column({default:Role.DEVELOPER})
     role:Role;

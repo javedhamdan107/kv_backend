@@ -5,6 +5,7 @@ import { Type } from "class-transformer";
 import CreateAddressDto from "./create-address.dto";
 import { Column } from "typeorm";
 import { Role } from "../utils/role.enum";
+import { Status } from "../utils/status.enum";
 
 
 class SetEmployeeDto{
@@ -36,6 +37,10 @@ class SetEmployeeDto{
     @ValidateIf((obj) => obj.value !== undefined)
     @IsString()
     joining_date:string
+
+    @ValidateIf((obj) => obj.value !== undefined)
+    @IsEnum(Status)
+    status:Status;
 
     @ValidateIf((obj) => obj.value !== undefined)
     @IsNumber()

@@ -42,6 +42,7 @@ class EmployeeService{
         employee.role= createEmployeeDto.role;
         employee.experience=createEmployeeDto.experience;
         employee.joining_date=createEmployeeDto.joining_date;
+        employee.status=createEmployeeDto.status;
         employee.departmentId=createEmployeeDto.departmentId;
 
         //to check for  exisintg dept
@@ -66,6 +67,7 @@ class EmployeeService{
         employee.departmentId=updateEmployeeDto.departmentId;
         employee.experience=updateEmployeeDto.experience;
         employee.joining_date=updateEmployeeDto.joining_date;
+        employee.status=updateEmployeeDto.status;
         employee.role=updateEmployeeDto.role;
         if(employee.address && updateEmployeeDto.address) {
             employee.address.address_line_1=updateEmployeeDto.address.address_line_1;
@@ -89,6 +91,7 @@ class EmployeeService{
         employee.departmentId=updateEmployeeDto.departmentId;
         employee.experience=updateEmployeeDto.experience;
         employee.joining_date=updateEmployeeDto.joining_date;
+        employee.status=updateEmployeeDto.status;
         employee.role=updateEmployeeDto.role;
         if(employee.address && updateEmployeeDto.address) {
             employee.address.address_line_1=updateEmployeeDto.address.address_line_1;

@@ -11,6 +11,7 @@ import * as dotenv from "dotenv";
 import HttpException from "../../exceptions/http.exception";
 import { Role } from "../../utils/role.enum";
 import SetEmployeeDto from "../../dto/set-employee.dto";
+import { Status } from "../../utils/status.enum";
 
 describe('Employee Service Test', () => {
     let employeeService: EmployeeService;
@@ -66,6 +67,7 @@ describe('Employee Service Test', () => {
                 experience:5,
                 departmentId:1,
                 role:Role.HR,
+                status:Status.ACTIVE,
                 joining_date:"10/11/2000",
                 address: {
                     address_line_1: "line 1",
